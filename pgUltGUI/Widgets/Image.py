@@ -1,6 +1,5 @@
 import pygame
 from pygame.surfarray import array3d, array_alpha, make_surface
-import numpy as np
 from .Widget import Widget
 
 
@@ -130,17 +129,21 @@ class Image(Widget):
 
     def _apply_grayscale(self, surface: pygame.Surface) -> pygame.Surface:
         """
-        Преобразование изображения в градации серого.
+        Преобразование изображения в градации серого.  (Pygame only - slower!)
 
         :param surface: Изображение для преобразования.
         :return: Изображение в градациях серого.
         """
-        arr = array3d(surface)  # Преобразование изображения в массив
-        alpha = array_alpha(surface).reshape(arr.shape[:2] + (1,))  # Получение альфа-канала
-        gray = np.dot(arr, [0.299, 0.587, 0.114]).astype(np.uint8)  # Преобразование в градации серого
-        gray_3d = np.repeat(gray[:, :, np.newaxis], 3, axis=2)  # Преобразование в 3D-массив
-        gray_surface = make_surface(gray_3d)  # Создание поверхности из массива
-        gray_surface.set_alpha(alpha)  # Установка альфа-канала
+
+        gray_surface = pygame.Surface(surface.get_size(), pygame.SRCALPHA)
+
+        for x in range(surface.get_width()):
+            for y in range(surface.get_height()):
+                r, g, b, a = surface.get_at((x, y)) 
+
+                gray = int(0.299 * r + 0.587 * g + 0.114 * b)
+                gray_surface.set_at((x, y), (gray, gray, gray, a))
+
         return gray_surface
 
     def _apply_opacity(self, surface: pygame.Surface, opacity: int) -> pygame.Surface:

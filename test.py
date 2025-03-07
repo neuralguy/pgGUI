@@ -1,6 +1,6 @@
 import pygame
 import random as rd
-from pgGUI import *
+from pgUltGUI import *
 
 
 class MainMenuScene(Scene):

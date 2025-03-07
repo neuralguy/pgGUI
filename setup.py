@@ -2,10 +2,11 @@ from setuptools import setup, find_packages
 
 setup(
     name='pgUltGUI',
-    version='0.1',
+    version='1.3',
     packages=find_packages(),
     install_requires=[
-        'pygame'
+        'pygame-ce',
+        'numpy'
     ],
     author='NeuralGuy',
     author_email='neuralguyy@gmail.com',
