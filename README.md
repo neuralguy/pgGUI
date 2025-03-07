@@ -1,5 +1,5 @@
 
-# pgGUI Library Documentation
+# pgUltGUI Library Documentation
 
 Welcome to the Pygame UI Library! This library provides a set of GUI widgets and tools to help you create interactive user interfaces in Pygame. Below, you'll find detailed documentation on how to use each widget, along with examples to get you started.
 
