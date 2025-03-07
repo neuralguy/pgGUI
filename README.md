@@ -22,7 +22,6 @@ Welcome to the Pygame UI Library! This library provides a set of GUI widgets and
 #### Basic example with a label and a button:
 ```python
 import pygame
-import random as rd
 from pgUI import *
 
 pygame.init()
@@ -67,7 +66,6 @@ while True:
 #### Example with scenes:
 ```python
 import pygame
-import random as rd
 from pgUI import *
 
 pygame.init()
@@ -138,6 +136,7 @@ while True:
     pygame.display.update()
 ```
 Result:
+
 ![First scene](res/second_example1.jpg)
 ![Second scene](res/second_example2.jpg)
 
