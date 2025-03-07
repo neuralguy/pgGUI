@@ -138,6 +138,7 @@ while True:
     pygame.display.update()
 ```
 Result:
+
 ![First scene](res/second_example1.jpg)
 ![Second scene](res/second_example2.jpg)
 
