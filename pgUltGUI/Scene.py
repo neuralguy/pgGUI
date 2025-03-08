@@ -1,5 +1,5 @@
 import pygame
-from .WidgetManager import WidgetManager
+from .Widgets import WidgetManager
 
 
 class Scene:

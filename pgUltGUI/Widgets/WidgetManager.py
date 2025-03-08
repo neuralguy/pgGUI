@@ -79,19 +79,22 @@ class WidgetManager:
 
     def handle_events(self, event: pygame.event.Event):
         """
-        Обработка событий для всех виджетов.
-
-        :param event: Событие Pygame.
+        Обработка событий для всех виджетов в порядке слоев (сверху вниз).
         """
-        for widget in reversed(self._event_handlers) if self._reverse_order else self._event_handlers:
-            widget.handle_event(event)  # Обработка события в виджете
+        for widget in reversed(self._event_handlers):
+            if not widget.visible:
+                continue  # Пропускаем невидимые виджеты
+
+            # Если виджет обработал событие, прекращаем дальнейшую обработку
+            if widget.handle_event(event):
+                break
 
     def update(self):
         """
         Обновление всех виджетов, которые требуют обновления.
         """
         for widget in self._update_handlers:
-            if widget._dirty or getattr(widget, 'always_update', False):
+            if widget.visible and widget._dirty or getattr(widget, 'always_update', False):
                 widget.update()  # Обновление виджета
                 
         # Оптимизация для группового обновления
@@ -109,7 +112,7 @@ class WidgetManager:
         """
         for layer in self._layers.values():
             for widget in layer.values():
-                if getattr(widget, 'visible', True):
+                if widget.visible:
                     widget.render(surface)  # Отрисовка виджета
 
     def bring_to_front(self, widget):

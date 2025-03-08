@@ -123,12 +123,17 @@ class Button(Widget):
             self._surfaces[key] = surface  # Сохранение поверхности в кэше
         return self._surfaces[key]  # Возврат поверхности из кэша
 
-    def handle_event(self, event: pygame.event.Event) -> None:
+    def handle_event(self, event: pygame.event.Event) -> True:
         """
         Обработка событий, связанных с кнопкой.
 
         :param event: Событие для обработки.
         """
+        handled = False
+
+        if self.rect.collidepoint(pygame.mouse.get_pos()):
+            handled = True
+
         if event.type == pygame.MOUSEMOTION:
             # Проверка, наведен ли курсор на кнопку
             self.is_hovered = self.rect.collidepoint(event.pos)
@@ -138,6 +143,7 @@ class Button(Widget):
                 self.is_active = True  # Установка флага нажатия
                 self.current_offset = self.active_offset  # Смещение кнопки при нажатии
                 self._dirty = True  # Установка флага для перерисовки
+
         elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
             # Обработка отпускания левой кнопки мыши
             if self.is_active:
@@ -147,6 +153,7 @@ class Button(Widget):
                 # Вызов функции on_click, если курсор все еще на кнопке
                 if self.rect.collidepoint(event.pos) and self.on_click:
                     self.on_click()
+        return handled
 
     def update(self) -> None:
         """

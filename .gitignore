@@ -3,3 +3,5 @@ __pychache__/
 build/
 dist/
 *.egg-info
+test.py
+promt.txt

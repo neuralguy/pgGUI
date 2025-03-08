@@ -7,7 +7,8 @@ class Widget:
                  padding: dict = {'top': 0, 'right': 0, 'bottom': 0, 'left': 0},
                  background_color: tuple = None, 
                  background_image: pygame.Surface = None,
-                 border_radius: int = 0):
+                 border_radius: int = 0,
+                 visible: bool = True):
         """
         Базовый класс для виджетов.
 
@@ -24,16 +25,25 @@ class Widget:
         # Учет отступов (margin) при установке позиции
         self.x = x + margin['left']
         self.y = y + margin['top']
+
         self._width = width  # Ширина (может быть None для автоматического расчета)
         self._height = height  # Высота (может быть None для автоматического расчета)
+
         self.margin = margin  # Внешние отступы
         self.padding = padding  # Внутренние отступы
+
         self.background_color = background_color  # Цвет фона
         self.background_image = background_image  # Изображение фона
+
         self.border_radius = border_radius  # Радиус скругления углов
         self.rect = pygame.Rect(self.x, self.y, 0, 0)  # Прямоугольник виджета
         self._dirty = False  # Флаг для отслеживания изменений
     
+        self._cached_bg = None  # Кэшированная поверхность фона
+        self._last_bg_params = (None, None)  # (цвет, размер)
+
+        self.visible = visible
+
     def render(self, surface: pygame.Surface):
         """
         Отрисовка виджета на поверхности. Должен быть переопределен в дочерних классах.
@@ -63,17 +73,31 @@ class Widget:
         self.rect = pygame.Rect(self.x, self.y, width, height)
 
     def render_background(self, surface: pygame.Surface):
-        """
-        Отрисовка фона виджета (цвет или изображение).
-
-        :param surface: Поверхность для отрисовки.
-        """
         if self.background_image:
-            # Масштабирование изображения под размер виджета
-            image = pygame.transform.scale(self.background_image, 
-                                         (self.rect.width, self.rect.height))
+            image = pygame.transform.scale(self.background_image, (self.rect.size))
             surface.blit(image, self.rect.topleft)
         elif self.background_color:
-            # Отрисовка фона с учетом скругления углов
-            pygame.draw.rect(surface, self.background_color, self.rect, 
-                           border_radius=self.border_radius)
+            # Текущие параметры
+            current_color = self.background_color
+            current_size = self.rect.size
+
+            # Если параметры изменились — пересоздаем кэш
+            if (current_color, current_size) != self._last_bg_params:
+                self._last_bg_params = (current_color, current_size)
+                
+                # Создаем поверхность с альфа-каналом
+                self._cached_bg = pygame.Surface(current_size, pygame.SRCALPHA)
+                color = current_color
+                if len(color) == 3:
+                    color = (*color, 255)
+                
+                # Рисуем фон
+                pygame.draw.rect(
+                    self._cached_bg,
+                    color,
+                    (0, 0, *current_size),
+                    border_radius=self.border_radius
+                )
+
+            # Наложение кэшированной поверхности
+            surface.blit(self._cached_bg, self.rect.topleft)
